@@ -10,6 +10,7 @@ Optionally the lab may also be present in the folder structure, for example:
 lab_name/Subjects/mouse_001/2021-05-27/001
 ```
 
+## Filenames
 The file names themselves should have at least two components; an object and attribute, separated by a period.
 For example a file called `trials.intervals` represents the trials object with an intervals attribute. 
 The full file path would be:
@@ -37,7 +38,7 @@ mouse_001/2021-05-27/001/probe01/spikes.times.npy
 ```
 
 Perhaps for analysis the spikes were sorted using two different spike sorters, one with Kilosort, the 
-other with Yass:
+other with Yass; this would be represented by a collection folder `ks2.1/` and `yass` respectively:
 ```
 mouse_001/2021-05-27/001/probe00/ks2.1/spikes.times.npy
 mouse_001/2021-05-27/001/probe01/yass/spikes.times.npy
@@ -64,9 +65,11 @@ mouse_001/2021-05-27/001/#2021-06-01b#/spikes.times.npy
 For datasets that are not intended to be standard in the community, a namespace may be added to the 
 start of the filename.  This must be surrounded by underscores:
 ```
-_ibl_wheel.position
+_ibl_trials.intervals.npy
 _ss_gratingID.laserOn.npy
 ```
+For example, in `_ibl_trials.intervals.npy`, the pattern `_ibl_` is referred to as a namespace, 
+and is used to indicate that this dataset is specific to the IBL.
 
 ### Timescale
 Datasets containing timestamp data are expected to be in the same common timescale (usually seconds from
@@ -103,6 +106,7 @@ Alf objects can be related through their attributes. If the attribute name of on
 second, then the first file is guaranteed to contain integers referring to the rows of the second. For example, 
 spikes.clusters.npy would contain integer references to the rows of clusters.brain_location.json and 
 clusters.probes.npy; and clusters.probes.npy would contain integer references to probes.insertion.json.
+All attributes belonging to the same object are of identical size. 
 
 ## Glossary
 
