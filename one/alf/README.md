@@ -1,6 +1,6 @@
 # ALyx Files (ALF)
 ALF stands for "ALyx Files". It not a format but rather a format-neutral file-naming convention.
-ALF is how IBL organizes files that will be loaded via the ONE protocol.
+ALF is how the IBL organizes files that will be loaded via the ONE protocol.
 
 ## Folder structure
 In ALF, the measurements in an experiment are represented by collections of files in a directory.
