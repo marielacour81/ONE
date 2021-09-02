@@ -1,8 +1,8 @@
-# ALyx Files (ALF)
+# Introduction
 ALF stands for "ALyx Files". It not a format but rather a format-neutral file-naming convention.
 ALF is how the IBL organizes files that will be loaded via the ONE protocol.
 
-## Folder structure
+# Folder structure
 In ALF, the measurements in an experiment are represented by collections of files in a directory.
 Files should be organized in folders by subject name, date and session number, for example:
 ```
@@ -14,7 +14,7 @@ Optionally the lab may also be present in the folder structure, for example:
 lab_name/Subjects/mouse_001/2021-05-27/001
 ```
 
-## Filenames
+# Filenames
 
 Each filename has three parts, for example `spikes.times.npy` or `spikes.clusters.npy`.
 The first two correspond to the ONE dataset type, and we refer to them as the _object_ and the _attribute_.
@@ -38,7 +38,7 @@ An example of full file path would be:
 ```
 lab_name/Subjects/mouse_001/2021-05-27/001/RFMapStim.intervals
 ```
-### Special cases on attributes
+## Special cases on attributes
 
 Each file contains information about particular attribute of the object.
 For example `spikes.times.npy` indicates the times of spikes and `spikes.clusters.npy` indicates their cluster assignments.
@@ -49,7 +49,7 @@ You can therefore think of the files for an object as together defining a table,
 
 ALF objects can represent anything. But three types of object are special:
 
-#### Event series
+### Event series
 
 If there is a file with attribute `times`, (i.e. filename `obj.times.ext`),
 it indicates that this object is an event series.
@@ -62,7 +62,7 @@ By convention, any other file with attribute that ends in `_times` is understood
 for example `trials.reward_times.npy`.
 An attribute ending with `_times_timescale` is by convention a time in that timescale.
 
-#### Interval series
+### Interval series
 
 If there is a file with attribute `intervals`, (i.e. filename `tones.intervals.npy`), 
 it should have two columns, indicating the start and end times of each interval relative to the universal timescale. 
@@ -70,7 +70,7 @@ Again, other attributes of the events can be stored in different files (e.g. `to
 Event times relative to other timescales can be represented by a file with attribute `intervals_timescale`. 
 Again, any other attributes of the form `trials.cue_intervals.npy` are by convention measured in universal seconds.
 
-#### Continuous timeseries
+### Continuous timeseries
 
 If there is a file with attribute `timestamps`, it indicates the object is a continuous timeseries. 
 The timestamps file represents information required to synchronize the timeseries to the universal timebase, 
@@ -78,7 +78,7 @@ even if they were unevenly sampled. There are 2 possibilities:
 -	The `timestamps` file contains a single column containing time of every sample within the timescale.
 -	The `timestamps` file contains two rows. Each row of the `timestamps` file represents a synchronization point, with the first column giving the sample number (counting from 0), and the second column giving the corresponding time in universal seconds. The times corresponding to all samples are then found by linear interpolation. Note that the `timestamps` file is an exception to the rule that all files representing a continuous timeseries object must have one row per sample, as it will often have substantially less. Note that an evenly-sampled recording should have just two timestamps, giving the times of the first and last sample.  
 
-### File types
+## File types
 ALF can deal with any sort of file, as long as it has a concept of a number of rows (or primary dimension). 
 The type of file is recognized by its extension. Preferred choices:
 
@@ -89,10 +89,10 @@ The type of file is recognized by its extension. Preferred choices:
 .bin: flat binary file. It's better to use .npy for storing binary data but some recording systems save in flat binary. Rather than convert them, you can ALFize a flat binary file by adding a metadata file, which specifies the number of columns (as the size of the "columns" array) and the binary datatype as a top-level key "dtype", using numpy naming conventions.
 
 
-## Optional components
+# Optional components
 There are other optional parts to the file path that are used to convey other information.
 
-### Collections
+## Collections
 Within a session folder the data may be placed in any number of sub-folders, each one is referred to as a 
 collection and these may be used to sort identical datasets by device or preprocessing software.  For 
 example spikes collected on two different probes maybe in different numbered probe collections:
@@ -108,7 +108,7 @@ mouse_001/2021-05-27/001/probe00/ks2.1/spikes.times.npy
 mouse_001/2021-05-27/001/probe01/yass/spikes.times.npy
 ```
 
-### Revisions
+## Revisions
 If the data require pre-processing in a different manner, a revision folder may be used so that the 
 original data is not overwritten.  This can be used as a form of versioning and should be a dated 
 folder surrounded by pound signs, e.g.
@@ -127,7 +127,7 @@ mouse_001/2021-05-27/001/#2021-06-01a#/spikes.times.npy
 mouse_001/2021-05-27/001/#2021-06-01b#/spikes.times.npy
 ```
 
-### Namespace
+## Namespace
 For datasets that are not intended to be standard in the community, a namespace may be added to the 
 start of the filename.  This must be surrounded by underscores:
 ```
@@ -137,7 +137,7 @@ _ss_gratingID.laserOn.npy
 For example, in `_ibl_trials.intervals.npy`, the pattern `_ibl_` is referred to as a namespace, 
 and is used to indicate that this dataset is specific to the IBL.
 
-### Timescale
+## Timescale
 Datasets containing timestamp data are expected to be in the same common timescale (usually seconds from
 experiment start).  For datasets in a different timescale, the clock name should be appended to the 
 attribute part with an underscore:
@@ -147,7 +147,7 @@ spikes.times_ephysClock.npy
 trials.intervals_bpod.ssv
 ```
 
-### Extension
+## Extension
 The extension should be self-explanatory.  Although they are optional in the ALF spec, it's preferable 
 to include the format in the filename, and to use formats that are well supported in MATLAB and Python:
 
@@ -157,7 +157,7 @@ spikes.times.csv
 spikes.times.mat
 ```
 
-### Extra
+## Extra
 Any number of extra parts, separated by periods, can be added after the attribute.  Examples include UUIDs
 for ensuring the filename is unique or parts for splitting datasets into parts.  NB: The text after the final
 period is expected to be the file extension.
@@ -167,16 +167,16 @@ trials.intervals.9198edcd-e8a4-4e8a-994f-d68a2e300380.npy
 2p.raw.part02.tiff
 ```
 
-### Relations
+## Relations
 Alf objects can be related through their attributes. If the attribute name of one file matches the object name of a 
 second, then the first file is guaranteed to contain integers referring to the rows of the second. For example, 
 `spikes.clusters.npy` would contain integer references to the rows of `clusters.brain_location.json` and 
 `clusters.probes.npy`; and `clusters.probes.npy` would contain integer references to `probes.insertion.json`.
 
 
-## Glossary
+# Glossary
 
-### Dataset name
+## Dataset name
 A filename with at least an object and attribute.  Some examples of valid ALF datasets:
 
 ```
@@ -185,7 +185,7 @@ spikes.times.npy
 _ibl_trials.goCue_times_bpodClock.csv
 ```
 
-### Dataset type
+## Dataset type
 In Alyx datasets are grouped by a type.  Datasets should belong to exactly one dataset type.  The 
 group is determined by a filename pattern.  Dataset types group datasets with the same content but 
 different formats, etc. and include a description of the dataset.  For example, the following datasets
@@ -197,7 +197,7 @@ spikes.times.9198edcd-e8a4-4e8a-994f-d68a2e300380.npy
 spikes.times.cbin
 ``` 
 
-### Session path
+## Session path
 The part of the path that includes the subject name, date and number.  Optionally a lab name may also 
 be part of the session path:
 
@@ -206,7 +206,7 @@ mouse_001/2021-05-27/001
 cortexlab/Subjects/mouse_001/2021-05-27/1
 ```
 
-### Relative path
+## Relative path
 Everything that comes after the session path.  In other words the filename and optional collections
 and revision folders:
 
@@ -216,7 +216,7 @@ trials.intervals.npy
 #2021-06-01#/trials.intervals.npy
 ```
 
-### ALF path
+## ALF path
 The full file path, including the session path and relative path, e.g.
 ```
 cortexlab/Subjects/mouse_001/2021-05-27/1/alf/probe00/spikes.times.npy
